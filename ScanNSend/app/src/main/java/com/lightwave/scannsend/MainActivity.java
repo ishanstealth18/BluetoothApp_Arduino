@@ -211,7 +211,13 @@ public class MainActivity extends AppCompatActivity {
                     UUID serviceUUID = gattServices.getUuid();
                     String serviceString = serviceUUID.toString();
                     Log.d(logTag,"serviceUUID: " +serviceUUID);
+                    characteristicList = gattServices.getCharacteristics();
                     Log.d(logTag, "Characterisitcs: " +gattServices.getCharacteristics());
+                }
+
+                for(BluetoothGattCharacteristic gattCharList : characteristicList)
+                {
+                    Log.d(logTag, "Characteristic UUID: " +gattCharList.getUuid().toString());
                 }
 
             }
@@ -219,6 +225,12 @@ public class MainActivity extends AppCompatActivity {
             {
                 Log.d(logTag, "Gatt service list is empty!!");
             }
+
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
 
         }
     };
