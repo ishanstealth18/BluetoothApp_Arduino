@@ -193,7 +193,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
-
+            UUID serviceUUID = null;
+            UUID charUUID = null;
             if(status == BluetoothGatt.GATT_SUCCESS)
             {
                 Log.d(logTag, "Gatt services:" +gatt.getServices());
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 for(BluetoothGattService gattServices : gattServiceList)
                 {
-                    UUID serviceUUID = gattServices.getUuid();
+                    serviceUUID = gattServices.getUuid();
                     String serviceString = serviceUUID.toString();
                     Log.d(logTag,"serviceUUID: " +serviceUUID);
                     characteristicList = gattServices.getCharacteristics();
@@ -217,8 +218,12 @@ public class MainActivity extends AppCompatActivity {
 
                 for(BluetoothGattCharacteristic gattCharList : characteristicList)
                 {
+                    charUUID = gattCharList.getUuid();
                     Log.d(logTag, "Characteristic UUID: " +gattCharList.getUuid().toString());
                 }
+                BluetoothGattCharacteristic c = gatt.getService(serviceUUID).getCharacteristic(charUUID);
+                c.setValue("m");
+                gatt.writeCharacteristic(c);
 
             }
             else
