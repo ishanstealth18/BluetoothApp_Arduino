@@ -83,9 +83,10 @@ public class MainActivity extends AppCompatActivity {
             "com.example.bluetooth.le.EXTRA_DATA";
 
 
-
-
-
+    /**
+     * Description: Below function will initialize all the UI components. Also it will set Bluetooth adapter
+     * @param savedInstanceState
+     */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +99,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Description: This function will check if the bluetooth is ON/OF on the device, if it's OFF, it will make it ON.
+     * param: null
+     */
     public void checkBluetoothEnable()
     {
         context = getApplicationContext();
+        //Logic to check if bluetooth is ON/OFF, if OFF, it will turn ON
        if(bluetoothAdapter == null || !bluetoothAdapter.isEnabled())
        {
            Log.d(logTag, "Turning Bluetooth ON");
@@ -109,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
            toast = Toast.makeText(context, "Turning Bluetooth ON", toastDuration);
            toast.show();
        }
+       //If bluetooth is already ON, show user it's already ON
        else
            {
             Log.d(logTag, "Bluetooth already ON");
@@ -118,9 +125,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Description: This function starts BLE scan, if device is already scanning, it will turn it OFF
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startLeScan()
     {
+        //Logic to check if scanning is already ON, it its ON, it will turn it OFF and start scanning again.
         bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
         handler = new Handler();
         if(!mScanning)
@@ -144,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Description: Below function will return the result once scanning is done and BLE device is found.
+     */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private ScanCallback leScanCallback= new ScanCallback() {
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -156,10 +170,11 @@ public class MainActivity extends AppCompatActivity {
             {
                 bleDeviceName = "NULL";
             }
+            //Add newly found BLE devices into an array and display it to the user.
             bleDeviceListArray.add(bleDeviceName);
             final ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, bleDeviceListArray);
             deviceList.setAdapter(adapter);
-
+            //Logic to check if the required BLE device is found, if found stop scanning and return the scan results
             if(bleDeviceName.equals("SH-HC-08"))
             {
                 bluetoothLeScanner.stopScan(leScanCallback);
@@ -170,11 +185,15 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * The below function will connect to the GATT server once BLE device is found
+     */
     private final BluetoothGattCallback gattCallBack= new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             String intentAction;
+            //Check if device and BLE peripheral are paired and connected
             if(newState == BluetoothProfile.STATE_CONNECTED)
             {
                 intentAction = ACTION_GATT_CONNECTED;
@@ -190,11 +209,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Description: Below function will start service discovery as soon as device and BLE peripheral are connected as GATT server-client.
+         * BLE peripheral is server and device is client.
+         * @param gatt
+         * @param status
+         */
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             UUID serviceUUID = null;
             UUID charUUID = null;
+            //If client is connected to GATT server, get all the services and add it to array list.
             if(status == BluetoothGatt.GATT_SUCCESS)
             {
                 Log.d(logTag, "Gatt services:" +gatt.getServices());
@@ -205,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(logTag, "onServicesDiscovered received: " + status);
             }
 
+            //Identify the characteristics of the services
             if(gattServiceList.size() > 0)
             {
                 for(BluetoothGattService gattServices : gattServiceList)
