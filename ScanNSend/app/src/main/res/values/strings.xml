@@ -3,4 +3,9 @@
     <string name="scan_bluetooth_device">scan_bluetooth_device</string>
     <string name="scan_device">Scan Device</string>
     <string name="paired_devices">Paired Devices</string>
+    <string name="enter_command">Enter Command</string>
+    <string name="hint">hint</string>
+    <string name="sendButtonCommand">sendButtonCommand</string>
+    <string name="send">Send</string>
+    <string name="command_text_input">command_text_input</string>
 </resources>
